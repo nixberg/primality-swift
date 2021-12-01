@@ -33,13 +33,13 @@ public extension UInt16 {
 
 public extension UInt32 {
     var isPrime: Choice {
-        self.isProbablyPrime(withMillerRabinWitnesses: [2, 7, 61])
+        self.isProbablyPrime(withMillerWitnesses: [2, 7, 61])
     }
 }
 
 public extension UInt64 {
     var isPrime: Choice {
-        self.isProbablyPrime(withMillerRabinWitnesses: [
+        self.isProbablyPrime(withMillerWitnesses: [
             2, 325, 9375, 28178, 450775, 9780504, 1795265022
         ])
     }
@@ -76,20 +76,19 @@ where
         }
     }
     
-    func isProbablyPrime(withMillerRabinWitnesses witnesses: [Self]) -> Choice {
-        let isGreaterThanThree: Choice = self > 3
+    func isProbablyPrime(withMillerWitnesses witnesses: [Self]) -> Choice {
+        let isGreaterThanTwo: Choice = self > 2
         let isOdd: Choice = self % 2 != 0
-        
-        return (self == 2) || (self == 3) || [
-            isGreaterThanThree,
+        return (self == 2) || [
+            isGreaterThanTwo,
             isOdd,
-            !self.replaced(with: 7, if: !(isGreaterThanThree && isOdd))
-                .isComposite(withMillerRabinWitnesses: witnesses)
+            !self.replaced(with: 3, if: !(isGreaterThanTwo && isOdd))
+                .isComposite(withMillerWitnesses: witnesses)
         ].reduce(.true, &&)
     }
     
-    private func isComposite(withMillerRabinWitnesses witnesses: [Self]) -> Choice {
-        assert(self > 3)
+    private func isComposite(withMillerWitnesses witnesses: [Self]) -> Choice {
+        assert(self > 1)
         assert(!self.isMultiple(of: 2))
         
         let k = Self(truncatingIfNeeded: (self &- 1).trailingZeroBitCount)
@@ -99,12 +98,16 @@ where
         assert((1 << k) * q + 1 == self)
         
         return witnesses.reduce(.false) {
-            // assert(gcd($1, self) == 1)
+            // See https://miller-rabin.appspot.com/#remarks
             
-            var witness = pow($1, q, modulo: self)
+            var witness = $1 % self
+            var isComposite: Choice = witness != 0
             
-            return $0 || Self.bits.reduce(into: witness != 1) {
-                $0 &&= (witness != (self &- 1)) || ($1 >= k)
+            witness = pow(witness, q, modulo: self)
+            isComposite &&= witness != 1
+            
+            return $0 || Self.bits.reduce(into: isComposite) {
+                $0 &&= (witness != self &- 1) || ($1 >= k)
                 witness.square(modulo: self)
             }
         }

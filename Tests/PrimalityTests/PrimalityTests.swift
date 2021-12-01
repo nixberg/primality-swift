@@ -13,7 +13,7 @@ final class PrimalityTests: XCTestCase {
                        Primes.under256)
         
         XCTAssertEqual((0...UInt8.max)
-                        .filter { Bool($0.isProbablyPrime(withMillerRabinWitnesses: [2])) },
+                        .filter { Bool($0.isProbablyPrime(withMillerWitnesses: [2])) },
                        Primes.under256)
         
         XCTAssertEqual((0...UInt8.max)
@@ -27,27 +27,32 @@ final class PrimalityTests: XCTestCase {
                        Primes.under65536)
         
         XCTAssertEqual((0...UInt16.max)
-                        .filter { Bool($0.isProbablyPrime(withMillerRabinWitnesses: [2, 3])) },
+                        .filter { Bool($0.isProbablyPrime(withMillerWitnesses: [2, 3])) },
                        Primes.under65536)
     }
     
-    // Full-range test would take a few core days.
-    // func testUInt32() {
-    //     XCTAssert((0...UInt32.max)
-    //                 .filter { Bool($0.isPrime) }
-    //                 .elementsEqual((2...UInt32.max).filter(\.isPrimeUsingFastTrialDivision)))
-    // }
+    func testUInt32Prefix() {
+        XCTAssertEqual((0...UInt32(UInt16.max))
+                        .filter { Bool($0.isPrime) },
+                       Primes.under65536.map(UInt32.init))
+    }
     
     func testUInt32Stochastically() {
-        for _ in 0..<256 {
+        for _ in 0..<1024 {
             var rng = SystemRandomNumberGenerator()
             let number: UInt32 = rng.next()
             XCTAssertEqual(Bool(number.isPrime), number.isPrimeUsingFastTrialDivision)
         }
     }
     
+    func testUInt64Prefix() {
+        XCTAssertEqual((0...UInt64(UInt16.max))
+                        .filter { Bool($0.isPrime) }.count,
+                       Primes.under65536.map(UInt64.init).count)
+    }
+    
     func testUInt64Stochastically() {
-        for _ in 0..<16 {
+        for _ in 0..<32 {
             var rng = SystemRandomNumberGenerator()
             let number: UInt64 = rng.next()
             XCTAssertEqual(Bool(number.isPrime), number.isPrimeUsingFastTrialDivision)
