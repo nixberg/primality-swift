@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "subtle-swift",
+        "repositoryURL": "https://github.com/nixberg/subtle-swift",
+        "state": {
+          "branch": "master",
+          "revision": "c71c45c0cabbd1809ebaf3b328684b04bac1c851",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
