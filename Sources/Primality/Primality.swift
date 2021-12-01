@@ -99,7 +99,6 @@ where
         assert((1 << k) * q + 1 == self)
         
         return witnesses.reduce(.false) {
-            assert((2..<(self - 1)).contains($1))
             // assert(gcd($1, self) == 1)
             
             var witness = pow($1, q, modulo: self)
