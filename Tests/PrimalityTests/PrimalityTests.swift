@@ -19,6 +19,10 @@ final class PrimalityTests: XCTestCase {
         XCTAssertEqual((0...UInt8.max)
                         .filter(\.isPrimeUsingFastTrialDivision),
                        Primes.under256)
+        
+        XCTAssertEqual((0...UInt8.max)
+                        .filter { Bool($0.isPrime(fastWithMillerWitnesses: [2])) },
+                       Primes.under256)
     }
     
     func testUInt16() {
@@ -28,6 +32,10 @@ final class PrimalityTests: XCTestCase {
         
         XCTAssertEqual((0...UInt16.max)
                         .filter { Bool($0.isPrime(withMillerWitnesses: [2, 3])) },
+                       Primes.under65536)
+        
+        XCTAssertEqual((0...UInt16.max)
+                        .filter { Bool($0.isPrime(fastWithMillerWitnesses: [2, 3])) },
                        Primes.under65536)
     }
     
@@ -41,7 +49,7 @@ final class PrimalityTests: XCTestCase {
         for _ in 0..<1024 {
             var rng = SystemRandomNumberGenerator()
             let number: UInt32 = rng.next()
-            XCTAssertEqual(Bool(number.isPrime), number.isPrimeUsingFastTrialDivision)
+            XCTAssertEqual(Bool(number.isPrime), number.isPrimeUsingFastHashing)
         }
     }
     
