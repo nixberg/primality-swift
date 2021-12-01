@@ -13,7 +13,7 @@ final class PrimalityTests: XCTestCase {
                        Primes.under256)
         
         XCTAssertEqual((0...UInt8.max)
-                        .filter { Bool($0.isProbablyPrime(withMillerWitnesses: [2])) },
+                        .filter { Bool($0.isPrime(withMillerWitnesses: [2])) },
                        Primes.under256)
         
         XCTAssertEqual((0...UInt8.max)
@@ -27,7 +27,7 @@ final class PrimalityTests: XCTestCase {
                        Primes.under65536)
         
         XCTAssertEqual((0...UInt16.max)
-                        .filter { Bool($0.isProbablyPrime(withMillerWitnesses: [2, 3])) },
+                        .filter { Bool($0.isPrime(withMillerWitnesses: [2, 3])) },
                        Primes.under65536)
     }
     
@@ -70,34 +70,4 @@ fileprivate struct Primes {
     static var under65536: [UInt16] = {
         (2...UInt16.max).filter(\.isPrimeUsingFastTrialDivision)
     }()
-}
-
-fileprivate extension FixedWidthInteger where Self: UnsignedInteger {
-    var isPrimeUsingFastTrialDivision: Bool {
-        guard self > 3 else {
-            return self > 1
-        }
-        
-        guard !self.isMultiple(of: 2),
-              !self.isMultiple(of: 3) else {
-            return false
-        }
-        
-        var divisor: Self = 5
-        
-        while true {
-            let squaredDivisor = divisor.multipliedReportingOverflow(by: divisor)
-            
-            guard !squaredDivisor.overflow, squaredDivisor.partialValue <= self else {
-                return true
-            }
-            
-            guard !self.isMultiple(of: divisor + 0),
-                  !self.isMultiple(of: divisor + 2) else {
-                return false
-            }
-            
-            divisor += 6
-        }
-    }
 }

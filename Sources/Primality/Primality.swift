@@ -33,15 +33,13 @@ public extension UInt16 {
 
 public extension UInt32 {
     var isPrime: Choice {
-        self.isProbablyPrime(withMillerWitnesses: [2, 7, 61])
+        self.isPrime(withMillerWitnesses: [2, 7, 61])
     }
 }
 
 public extension UInt64 {
     var isPrime: Choice {
-        self.isProbablyPrime(withMillerWitnesses: [
-            2, 325, 9375, 28178, 450775, 9780504, 1795265022
-        ])
+        self.isPrime(withMillerWitnesses: [2, 325, 9375, 28178, 450775, 9780504, 1795265022])
     }
 }
 
@@ -76,7 +74,7 @@ where
         }
     }
     
-    func isProbablyPrime(withMillerWitnesses witnesses: [Self]) -> Choice {
+    func isPrime(withMillerWitnesses witnesses: [Self]) -> Choice {
         let isGreaterThanTwo: Choice = self > 2
         let isOdd: Choice = self % 2 != 0
         return (self == 2) || [
